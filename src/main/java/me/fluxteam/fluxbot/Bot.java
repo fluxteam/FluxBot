@@ -18,7 +18,20 @@ public class Bot {
 
     private Bot() throws LoginException{
         //EnumSet.allOf(GatewayIntent.class)
-        jda = JDABuilder.createDefault(Private.token, GatewayIntent.GUILD_EMOJIS, GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_MESSAGE_REACTIONS)
+        jda = JDABuilder.create(System.getenv("TOKEN"),
+                GatewayIntent.GUILD_MEMBERS,
+                GatewayIntent.GUILD_BANS,
+                GatewayIntent.GUILD_EMOJIS,
+                GatewayIntent.GUILD_WEBHOOKS,
+                GatewayIntent.GUILD_INVITES,
+                GatewayIntent.GUILD_VOICE_STATES,
+                GatewayIntent.GUILD_PRESENCES,
+                GatewayIntent.GUILD_MESSAGES,
+                GatewayIntent.GUILD_MESSAGE_REACTIONS,
+                GatewayIntent.GUILD_MESSAGE_TYPING,
+                GatewayIntent.DIRECT_MESSAGES,
+                GatewayIntent.DIRECT_MESSAGE_REACTIONS,
+                GatewayIntent.DIRECT_MESSAGE_TYPING)
                 .setActivity(Activity.watching("its development."))
                 .addEventListeners(new MessageEvents())
                 .build();

@@ -1,5 +1,6 @@
 package me.fluxteam.fluxbot.events;
 
+import me.fluxteam.fluxbot.Bot;
 import me.fluxteam.fluxbot.PublicVars;
 import me.fluxteam.fluxbot.commands.Ping;
 import me.fluxteam.fluxbot.commands.RoleHere;
@@ -7,6 +8,7 @@ import me.fluxteam.fluxbot.utils.ConfigUtilities;
 import me.fluxteam.fluxbot.utils.GeneralUtilities;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.guild.react.GenericGuildMessageReactionEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -33,9 +35,9 @@ public class MessageEvents extends ListenerAdapter {
         args.addAll(Arrays.asList(msg.getContentRaw().split(" ")));
 
         if (args.get(0).equals("fl!ping")) {
-            new Ping(channel, msg);
+            new Ping(channel, msg, event.getMember());
         }else if(args.get(0).equals("fl!rolehere")) {
-            new RoleHere(channel, msg);
+            new RoleHere(channel, msg, event.getMember(), 2);
         }else if(args.get(0).equals("fl!clear")){
             if(args.size() != 2 || !GeneralUtilities.isInteger(args.get(1)))
                 channel.sendMessage("Doğru kullanım: fl!clear <silmek istediğiniz mesaj sayısı>").queue();
@@ -66,8 +68,32 @@ public class MessageEvents extends ListenerAdapter {
     @Override
     public void onMessageReactionRemove(@Nonnull MessageReactionRemoveEvent event) {
 
-        if(Objects.requireNonNull(event.getUser()).isBot())
+        if(event.getUser().isBot())
             return;
+
+        if(event.getMessageId().equals(ConfigUtilities.getRoleMessageID())){
+            Member m = event.getMember();
+            if(!m.getRoles().contains(event.getGuild().getRoleById(PublicVars.POSTCARDROLEID))){ //TODO DUMP TO CONF
+                event.getGuild().addRoleToMember(m, event.getGuild().getRoleById(PublicVars.POSTCARDROLEID)).queue();
+            }else {
+                event.getGuild().removeRoleFromMember(m, event.getGuild().getRoleById(PublicVars.POSTCARDROLEID)).queue();
+            }
+        }
+
+    }
+
+    /*@Override
+    public void onGenericGuildMessageReaction(@Nonnull GenericGuildMessageReactionEvent event) {
+        try {
+            String s = event.getUserId();
+            User u = event.getUser();
+            u.isBot();
+            /*if(Bot.jda.getUserById(event.getUserId()).isBot())
+                return;
+        }catch (NullPointerException e){
+            System.out.println("MessageEvents.java > 1");
+            e.printStackTrace();
+        }
 
         if(event.getMessageId().equals(ConfigUtilities.getRoleMessageID())){
             Member m = event.getMember();
@@ -78,6 +104,6 @@ public class MessageEvents extends ListenerAdapter {
                 event.getGuild().removeRoleFromMember(m, event.getGuild().getRoleById(PublicVars.POSTCARDROLEID)).queue();
             }
         }
-
-    }
+    }*/
 }
+

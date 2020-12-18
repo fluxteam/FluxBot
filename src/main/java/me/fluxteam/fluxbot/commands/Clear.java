@@ -1,12 +1,13 @@
 package me.fluxteam.fluxbot.commands;
 
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 
 public class Clear extends FluxCommand{
 
-    public Clear(MessageChannel channel, Message commandMessage, String[] args) {
-        super(channel, commandMessage, args);
+    public Clear(MessageChannel channel, Message commandMessage, Member member, String[] args) {
+        super(channel, commandMessage, member, args);
     }
 
     @Override
