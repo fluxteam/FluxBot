@@ -5,7 +5,9 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public abstract class FluxCommand {
@@ -16,73 +18,87 @@ public abstract class FluxCommand {
     2: admin
      */
 
-    MessageChannel channel;
-    Message message;
-    Member dispatcher;
-    String[] args;
+    List<String> args;
+    MessageReceivedEvent event;
 
-    public FluxCommand(MessageChannel channel, Message commandMessage, Member dispatcher){
-        this.channel = channel;
-        this.message = commandMessage;
-        this.dispatcher = dispatcher;
-        if (!checkPermission()) {
-            clearUp(5, message);
-            channel.sendMessage("Yeterli yetkiniz yok!").queue(message1 -> clearUp(5, message1));
-        }else{
-            dispatch();
-            clearUp(5, message);
-        }
+    public FluxCommand(MessageReceivedEvent event){
+
+        this.event = event;
+
+        dispatch();
+        clearUp(5, event.getMessage());
+
     }
 
-    public FluxCommand(MessageChannel channel, Message commandMessage, Member dispatcher, int permissionID){
-        this.channel = channel;
-        this.message = commandMessage;
-        this.dispatcher = dispatcher;
-        this.permissionID = permissionID;
-        if (!checkPermission()) {
-            clearUp(5, message);
-            channel.sendMessage("Yeterli yetkiniz yok!").queue(message1 -> clearUp(5, message1));
-        }else{
-            dispatch();
-            clearUp(5, message);
-        }
-    }
+    public FluxCommand(MessageReceivedEvent event, List<String> args){
 
-    public FluxCommand(MessageChannel channel, Message commandMessage, Member dispatcher, String[] args){
-        this.channel = channel;
-        this.message = commandMessage;
-        this.dispatcher = dispatcher;
-        if (!checkPermission()) {
-            clearUp(5, message);
-            channel.sendMessage("Yeterli yetkiniz yok!").queue(message1 -> clearUp(5, message1));
-        }else{
-            dispatch();
-            clearUp(5, message);
-        }
-    }
-
-    public FluxCommand(MessageChannel channel, Message commandMessage, Member dispatcher, int permissionID, String[] args) {
-        this.channel = channel;
-        this.message = commandMessage;
-        this.dispatcher = dispatcher;
-        this.permissionID = permissionID;
         this.args = args;
+        this.event = event;
+
+        dispatch();
+        clearUp(5, event.getMessage());
+
+    }
+
+    public FluxCommand(MessageReceivedEvent event, int permissionID){
+
+        this.event = event;
+        this.permissionID = permissionID;
 
         if (!checkPermission()) {
-            clearUp(5, message);
-            channel.sendMessage("Yeterli yetkiniz yok!").queue(message1 -> clearUp(5, message1));
+            clearUp(5, event.getMessage());
+            event.getChannel().sendMessage("Yeterli yetkiniz yok!").queue(message1 -> clearUp(5, message1));
         }else{
             dispatch();
-            clearUp(5, message);
+            clearUp(5, event.getMessage());
         }
+
+    }
+
+    public FluxCommand(MessageReceivedEvent event, List<String> args, int permissionID){
+
+        this.args = args;
+        this.event = event;
+        this.permissionID = permissionID;
+
+        if (!checkPermission()) {
+            clearUp(5, event.getMessage());
+            event.getChannel().sendMessage("Yeterli yetkiniz yok!").queue(message1 -> clearUp(5, message1));
+        }else{
+            dispatch();
+            clearUp(5, event.getMessage());
+        }
+
+    }
+
+    public FluxCommand(MessageReceivedEvent event, List<String> args, int permissionID, boolean cleanUp){
+
+        this.args = args;
+        this.event = event;
+        this.permissionID = permissionID;
+
+        if (!checkPermission()) {
+            clearUp(5, event.getMessage());
+            event.getChannel().sendMessage("Yeterli yetkiniz yok!").queue(message1 -> clearUp(5, message1));
+        }else if(cleanUp){
+            dispatch();
+            clearUp(5, event.getMessage());
+        }else {
+            dispatch();
+        }
+
     }
 
     public boolean checkPermission(){
         if(permissionID != 0)
-            if(permissionID == 2 && dispatcher.hasPermission(Permission.ADMINISTRATOR))
+            if(permissionID == 2 && event.getMember().hasPermission(Permission.ADMINISTRATOR))
+                return true;
+            else if(permissionID == 3 && event.getMember().getId()
+                    .equalsIgnoreCase("129630025254174720"))
                 return true;
             else
                 return false;
+
         return true;
     }
 

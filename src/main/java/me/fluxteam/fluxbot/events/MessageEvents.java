@@ -2,6 +2,7 @@ package me.fluxteam.fluxbot.events;
 
 import me.fluxteam.fluxbot.Bot;
 import me.fluxteam.fluxbot.PublicVars;
+import me.fluxteam.fluxbot.commands.Eval;
 import me.fluxteam.fluxbot.commands.Ping;
 import me.fluxteam.fluxbot.commands.RoleHere;
 import me.fluxteam.fluxbot.utils.ConfigUtilities;
@@ -26,7 +27,7 @@ public class MessageEvents extends ListenerAdapter {
     public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
         Message msg = event.getMessage();
 
-        if(!msg.getContentRaw().startsWith("fl!"))
+        if (!msg.getContentRaw().startsWith("fl!"))
             return;
 
         MessageChannel channel = event.getChannel();
@@ -35,15 +36,18 @@ public class MessageEvents extends ListenerAdapter {
         args.addAll(Arrays.asList(msg.getContentRaw().split(" ")));
 
         if (args.get(0).equals("fl!ping")) {
-            new Ping(channel, msg, event.getMember());
-        }else if(args.get(0).equals("fl!rolehere")) {
-            new RoleHere(channel, msg, event.getMember(), 2);
-        }else if(args.get(0).equals("fl!clear")){
+            new Ping(event);
+        } else if (args.get(0).equals("fl!rolehere")) {
+            new RoleHere(event, 2);
+        } else if(args.get(0).equals("fl!clear")){
             if(args.size() != 2 || !GeneralUtilities.isInteger(args.get(1)))
                 channel.sendMessage("Doğru kullanım: fl!clear <silmek istediğiniz mesaj sayısı>").queue();
             else
                 channel.getHistory().retrievePast(Integer.parseInt(args.get(1))+1).complete().forEach(message -> message.delete().queue());
 
+        } else if(args.get(0).equals("fl!test")){
+            channel.sendMessage(String.valueOf(event.getGuild().getEmotesByName("postcard", true).size())).queue();
+            channel.sendMessage(String.valueOf(event.getGuild().getEmotesByName("wordbot", true).get(0).getId())).queue();
         }
     }
 
@@ -55,11 +59,12 @@ public class MessageEvents extends ListenerAdapter {
 
         if(event.getMessageId().equals(ConfigUtilities.getRoleMessageID())){
             Member m = event.getMember();
-
-            if(!m.getRoles().contains(event.getGuild().getRoleById(PublicVars.POSTCARDROLEID))){ //TODO DUMP TO CONF
-                event.getGuild().addRoleToMember(m, event.getGuild().getRoleById(PublicVars.POSTCARDROLEID)).queue();
+            Role r = GeneralUtilities.getEmoteRolesByID(event.getGuild())
+                    .get(event.getReaction().getReactionEmote().getEmote().getId());
+            if(!m.getRoles().contains(r)){
+                event.getGuild().addRoleToMember(m, r).queue();
             }else {
-                event.getGuild().removeRoleFromMember(m, event.getGuild().getRoleById(PublicVars.POSTCARDROLEID)).queue();
+                event.getGuild().removeRoleFromMember(m, r).queue();
             }
         }
 
@@ -72,12 +77,16 @@ public class MessageEvents extends ListenerAdapter {
             return;
 
         if(event.getMessageId().equals(ConfigUtilities.getRoleMessageID())){
+
             Member m = event.getMember();
-            if(!m.getRoles().contains(event.getGuild().getRoleById(PublicVars.POSTCARDROLEID))){ //TODO DUMP TO CONF
-                event.getGuild().addRoleToMember(m, event.getGuild().getRoleById(PublicVars.POSTCARDROLEID)).queue();
+            Role r = GeneralUtilities.getEmoteRolesByID(event.getGuild())
+                    .get(event.getReaction().getReactionEmote().getEmote().getId());
+            if(!m.getRoles().contains(r)){
+                event.getGuild().addRoleToMember(m, r).queue();
             }else {
-                event.getGuild().removeRoleFromMember(m, event.getGuild().getRoleById(PublicVars.POSTCARDROLEID)).queue();
+                event.getGuild().removeRoleFromMember(m, r).queue();
             }
+
         }
 
     }

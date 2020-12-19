@@ -39,7 +39,7 @@ public class ConfigUtilities {
             newData.put(key, value);
 
 
-        final FileWriter writer = new FileWriter("src/main/resources/config.yml");
+        final FileWriter writer = new FileWriter("/config.yml");
         yaml.dump(newData, writer);
 
     }
