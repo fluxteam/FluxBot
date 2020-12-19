@@ -18,7 +18,7 @@ public class Bot {
 
     private Bot() throws LoginException{
         //EnumSet.allOf(GatewayIntent.class)
-        jda = JDABuilder.create(Private.token, //TODO CHECK if it is System.getenv("TOKEN")
+        jda = JDABuilder.create(System.getenv("TOKEN"), //TODO CHECK if it is System.getenv("TOKEN")
                 GatewayIntent.GUILD_MEMBERS,
                 GatewayIntent.GUILD_BANS,
                 GatewayIntent.GUILD_EMOJIS,
