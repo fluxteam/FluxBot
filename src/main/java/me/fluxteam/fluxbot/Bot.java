@@ -19,7 +19,7 @@ public class Bot {
 
     private Bot() throws LoginException{
 
-        jda = JDABuilder.create(Private.token, //TODO  Private.token / System.getenv("TOKEN")
+        jda = JDABuilder.create(System.getenv("TOKEN"), //TODO  Private.token / System.getenv("TOKEN")
                 GatewayIntent.GUILD_MEMBERS,
                 GatewayIntent.GUILD_BANS,
                 GatewayIntent.GUILD_EMOJIS,
