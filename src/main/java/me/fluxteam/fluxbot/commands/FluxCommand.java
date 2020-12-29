@@ -1,10 +1,7 @@
 package me.fluxteam.fluxbot.commands;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.List;
@@ -16,6 +13,7 @@ public abstract class FluxCommand {
     /*
     0: everyone
     2: admin
+    3: Teoman00
      */
 
     List<String> args;

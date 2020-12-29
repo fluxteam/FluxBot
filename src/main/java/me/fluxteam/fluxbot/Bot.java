@@ -2,13 +2,14 @@ package me.fluxteam.fluxbot;
 
 
 import me.fluxteam.fluxbot.events.MessageEvents;
-import me.fluxteam.fluxbot.utils.ConfigUtilities;
+import me.fluxteam.fluxbot.utils.FirestoreUtilities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import javax.security.auth.login.LoginException;
+import java.io.IOException;
 
 public class Bot {
 
@@ -17,8 +18,8 @@ public class Bot {
     public static JDA jda;
 
     private Bot() throws LoginException{
-        //EnumSet.allOf(GatewayIntent.class)
-        jda = JDABuilder.create(System.getenv("TOKEN"), //TODO CHECK if it is System.getenv("TOKEN")
+
+        jda = JDABuilder.create(Private.token, //TODO  Private.token / System.getenv("TOKEN")
                 GatewayIntent.GUILD_MEMBERS,
                 GatewayIntent.GUILD_BANS,
                 GatewayIntent.GUILD_EMOJIS,
@@ -36,13 +37,17 @@ public class Bot {
                 .addEventListeners(new MessageEvents())
                 .build();
 
-        init();
+        try {
+            init();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
-    public static void init(){
+    public static void init() throws IOException {
 
-        ConfigUtilities.init();
+        FirestoreUtilities.init();
 
     }
 

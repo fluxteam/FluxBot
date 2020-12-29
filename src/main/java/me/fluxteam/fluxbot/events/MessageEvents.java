@@ -1,15 +1,11 @@
 package me.fluxteam.fluxbot.events;
 
-import me.fluxteam.fluxbot.Bot;
-import me.fluxteam.fluxbot.PublicVars;
-import me.fluxteam.fluxbot.commands.Eval;
+import me.fluxteam.fluxbot.commands.Idea;
 import me.fluxteam.fluxbot.commands.Ping;
 import me.fluxteam.fluxbot.commands.RoleHere;
-import me.fluxteam.fluxbot.utils.ConfigUtilities;
 import me.fluxteam.fluxbot.utils.GeneralUtilities;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.events.message.guild.react.GenericGuildMessageReactionEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -18,8 +14,6 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MessageEvents extends ListenerAdapter {
 
@@ -38,34 +32,55 @@ public class MessageEvents extends ListenerAdapter {
         if (args.get(0).equals("fl!ping")) {
             new Ping(event);
         } else if (args.get(0).equals("fl!rolehere")) {
-            new RoleHere(event, 2);
-        } else if(args.get(0).equals("fl!clear")){
-            if(args.size() != 2 || !GeneralUtilities.isInteger(args.get(1)))
+            new RoleHere(event, args, 2);
+        } else if (args.get(0).equals("fl!clear")) {
+
+            if (args.size() != 2 || !GeneralUtilities.isInteger(args.get(1)))
                 channel.sendMessage("Doğru kullanım: fl!clear <silmek istediğiniz mesaj sayısı>").queue();
             else
-                channel.getHistory().retrievePast(Integer.parseInt(args.get(1))+1).complete().forEach(message -> message.delete().queue());
+                channel.getHistory().retrievePast(Integer.parseInt(args.get(1)) + 1).complete().forEach(message -> message.delete().queue());
 
-        } else if(args.get(0).equals("fl!test")){
-            channel.sendMessage(String.valueOf(event.getGuild().getEmotesByName("postcard", true).size())).queue();
-            channel.sendMessage(String.valueOf(event.getGuild().getEmotesByName("wordbot", true).get(0).getId())).queue();
+        }else if(args.get(0).equals("fl!idea")){
+            new Idea(event, args);
         }
     }
 
     @Override
     public void onMessageReactionAdd(@Nonnull MessageReactionAddEvent event) {
 
+        // BOT CHECK ++
         if(event.getUser().isBot())
             return;
+        // BOT CHECK --
 
-        if(event.getMessageId().equals(ConfigUtilities.getRoleMessageID())){
-            Member m = event.getMember();
+        Member m = event.getMember();
+
+        if(event.getReaction().getReactionEmote().isEmote()
+                && GeneralUtilities.getBotEmotes(event.getGuild())
+                .contains(event.getReactionEmote().getEmote())){
+
             Role r = GeneralUtilities.getEmoteRolesByID(event.getGuild())
-                    .get(event.getReaction().getReactionEmote().getEmote().getId());
-            if(!m.getRoles().contains(r)){
+                    .get(event.getReactionEmote().getEmote().getId());
+
+            if(!m.getRoles().contains(r))
                 event.getGuild().addRoleToMember(m, r).queue();
-            }else {
+            else
                 event.getGuild().removeRoleFromMember(m, r).queue();
-            }
+
+        }
+        //TODO CHECK THE MSG ID FROM FIREBASE
+        else if(event.getReaction().getReactionEmote().isEmoji()
+                && GeneralUtilities.getLangEmotes()
+                .contains(event.getReactionEmote().getEmoji())){
+
+            Role r = GeneralUtilities.getLangRolesByID(event.getGuild())
+                    .get(event.getReactionEmote().getEmoji());
+
+            if(!m.getRoles().contains(r))
+                event.getGuild().addRoleToMember(m, r).queue();
+            else
+                event.getGuild().removeRoleFromMember(m, r).queue();
+
         }
 
     }
@@ -73,46 +88,42 @@ public class MessageEvents extends ListenerAdapter {
     @Override
     public void onMessageReactionRemove(@Nonnull MessageReactionRemoveEvent event) {
 
+        // BOT CHECK ++
         if(event.getUser().isBot())
             return;
+        // BOT CHECK --
 
-        if(event.getMessageId().equals(ConfigUtilities.getRoleMessageID())){
+        Member m = event.getMember();
 
-            Member m = event.getMember();
+        if(event.getReaction().getReactionEmote().isEmote()
+                && GeneralUtilities.getBotEmotes(event.getGuild())
+                .contains(event.getReactionEmote().getEmote())){
+
             Role r = GeneralUtilities.getEmoteRolesByID(event.getGuild())
-                    .get(event.getReaction().getReactionEmote().getEmote().getId());
-            if(!m.getRoles().contains(r)){
+                    .get(event.getReactionEmote().getEmote().getId());
+
+            if(!m.getRoles().contains(r))
                 event.getGuild().addRoleToMember(m, r).queue();
-            }else {
+            else
                 event.getGuild().removeRoleFromMember(m, r).queue();
-            }
+
+        }
+
+        else if(event.getReaction().getReactionEmote().isEmoji()
+                && GeneralUtilities.getLangEmotes()
+                .contains(event.getReactionEmote().getEmoji())){
+
+            Role r = GeneralUtilities.getLangRolesByID(event.getGuild())
+                    .get(event.getReactionEmote().getEmoji());
+
+            if(!m.getRoles().contains(r))
+                event.getGuild().addRoleToMember(m, r).queue();
+            else
+                event.getGuild().removeRoleFromMember(m, r).queue();
 
         }
 
     }
 
-    /*@Override
-    public void onGenericGuildMessageReaction(@Nonnull GenericGuildMessageReactionEvent event) {
-        try {
-            String s = event.getUserId();
-            User u = event.getUser();
-            u.isBot();
-            /*if(Bot.jda.getUserById(event.getUserId()).isBot())
-                return;
-        }catch (NullPointerException e){
-            System.out.println("MessageEvents.java > 1");
-            e.printStackTrace();
-        }
-
-        if(event.getMessageId().equals(ConfigUtilities.getRoleMessageID())){
-            Member m = event.getMember();
-
-            if(!m.getRoles().contains(event.getGuild().getRoleById(PublicVars.POSTCARDROLEID))){ //TODO DUMP TO CONF
-                event.getGuild().addRoleToMember(m, event.getGuild().getRoleById(PublicVars.POSTCARDROLEID)).queue();
-            }else {
-                event.getGuild().removeRoleFromMember(m, event.getGuild().getRoleById(PublicVars.POSTCARDROLEID)).queue();
-            }
-        }
-    }*/
 }
 
