@@ -5,6 +5,7 @@ import me.fluxteam.fluxbot.PublicVars;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 
 import java.awt.*;
@@ -30,13 +31,12 @@ public class GeneralUtilities {
 
         /*
         WordBot
-        Postcard
-        TO.d
+        KoiosBot
          */
 
         List<Emote> emotes = new ArrayList<>();
         emotes.add(guild.getEmotesByName("wordbot", true).get(0));
-        emotes.add(guild.getEmotesByName("postcard", true).get(0));
+        emotes.add(guild.getEmotesByName("koiosbot", true).get(0));
 
         return emotes;
 
@@ -57,14 +57,17 @@ public class GeneralUtilities {
 
     }
 
-    public static HashMap<String, Role> getEmoteRolesByID(Guild guild){
+    public static HashMap<String, Role> getEmoteRolesByID(Guild guild, boolean isTurkish){
 
         HashMap<String, Role> rt = new HashMap<>();
-        rt.put("788471599706931220", guild.getRoleById(PublicVars.WORDBOTROLEID));
-        rt.put("788428969862103042", guild.getRoleById(PublicVars.POSTCARDROLEID));
-
+        if(isTurkish) {
+            rt.put(PublicVars.WBEMOJIID, guild.getRoleById(PublicVars.TRWBROLEID));
+            rt.put(PublicVars.KBEMOJIID, guild.getRoleById(PublicVars.TRKBROLEID));
+        } else {
+            rt.put(PublicVars.WBEMOJIID, guild.getRoleById(PublicVars.ENWBROLEID));
+            rt.put(PublicVars.KBEMOJIID, guild.getRoleById(PublicVars.ENKBROLEID));
+        }
         return rt;
-
 
     }
 

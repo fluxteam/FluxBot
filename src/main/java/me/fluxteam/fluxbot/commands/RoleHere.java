@@ -1,5 +1,6 @@
 package me.fluxteam.fluxbot.commands;
 
+import me.fluxteam.fluxbot.PublicVars;
 import me.fluxteam.fluxbot.utils.FirestoreUtilities;
 import me.fluxteam.fluxbot.utils.GeneralUtilities;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -28,15 +29,14 @@ public class RoleHere extends FluxCommand{
             me = eb.setTitle(" ")
                     .setAuthor("İlgilendiğiniz botun rolünü almak için, ilgili emojiye tıklayın.")
                     .addField("For the bot you want to track, add a reaction to the related emote.", "", false)
-                    .addField("WordBot", "<:wordbot:788471599706931220>", true)
-                    .addField("Postcard", "<:postcard:788428969862103042>", true)
+                    .addField("WordBot", "<:wordbot:" + PublicVars.WBEMOJIID + ">", true)
+                    .addField("KoiosBot", "<:koiosbot:" + PublicVars.KBEMOJIID + ">", true)
                     .build();
 
             event.getChannel().sendMessage(me).queue(message -> {
 
                 for(Emote e : GeneralUtilities.getBotEmotes(event.getGuild()))
                     message.addReaction(e).queue();
-
                 try {
                     FirestoreUtilities.setBotRoleMessageID(message.getId());
                 } catch (ExecutionException e) {

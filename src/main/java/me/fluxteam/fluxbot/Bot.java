@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 public class Bot {
 
@@ -19,7 +20,7 @@ public class Bot {
 
     private Bot() throws LoginException{
 
-        jda = JDABuilder.create(System.getenv("TOKEN"), //TODO  Private.token / System.getenv("TOKEN")
+        jda = JDABuilder.create(System.getenv("FLBOTTOKEN"), //TODO  Private.token / System.getenv("TOKEN")
                 GatewayIntent.GUILD_MEMBERS,
                 GatewayIntent.GUILD_BANS,
                 GatewayIntent.GUILD_EMOJIS,
@@ -41,11 +42,15 @@ public class Bot {
             init();
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
         }
 
     }
 
-    public static void init() throws IOException {
+    public static void init() throws IOException, ExecutionException, InterruptedException {
 
         FirestoreUtilities.init();
 

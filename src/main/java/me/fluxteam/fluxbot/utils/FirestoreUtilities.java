@@ -6,6 +6,8 @@ import com.google.cloud.firestore.*;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.FirestoreClient;
+import me.fluxteam.fluxbot.Bot;
+import me.fluxteam.fluxbot.PublicVars;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -17,7 +19,10 @@ public class FirestoreUtilities {
 
     public static Firestore db;
 
-    public static void init() throws IOException {
+    public static String cacheLANGUAGEROLEMSGID = "";
+    public static String cacheBOTROLEMSGID = "";
+
+    public static void init() throws IOException, ExecutionException, InterruptedException {
 
         FirebaseOptions options = new FirebaseOptions.Builder()
                 .setCredentials(GoogleCredentials.fromStream(JSONUtilities.getFirebaseJSON()))
@@ -27,14 +32,16 @@ public class FirestoreUtilities {
         FirebaseApp.initializeApp(options);
 
         db = FirestoreClient.getFirestore();
+        cacheLANGUAGEROLEMSGID = getFSLangRoleMessageID();
+        cacheBOTROLEMSGID = getFSBotRoleMessageID();
 
     }
 
     public static void add(String collection, String document, String key, String value) throws ExecutionException, InterruptedException {
         DocumentReference docRef = db.collection(collection).document(document);
-        Map<String, String> data = new HashMap<>();
+        Map<String, Object> data = new HashMap<>();
         data.put(key, value);
-        ApiFuture<WriteResult> result = docRef.set(data);
+        ApiFuture<WriteResult> result = docRef.update(data);
         System.out.println("Update time : " + result.get().getUpdateTime());
     }
 
@@ -65,24 +72,48 @@ public class FirestoreUtilities {
     public static void setLangRoleMessageID(String messageID) throws ExecutionException, InterruptedException {
 
         add("config", "flux", "langmsg", messageID);
+        cacheLANGUAGEROLEMSGID = messageID;
 
     }
 
     public static void setBotRoleMessageID(String messageID) throws ExecutionException, InterruptedException {
         add("config", "flux", "botmsg", messageID);
+        cacheBOTROLEMSGID = messageID;
     }
 
-    public static String getLangRoleMessageID() throws ExecutionException, InterruptedException {
+    private static String getFSLangRoleMessageID() throws ExecutionException, InterruptedException {
         QueryDocumentSnapshot doc = getDocument("config", "flux");
 
         return doc.getString("langmsg");
 
     }
 
-    public static String getBotRoleMessageID() throws ExecutionException, InterruptedException {
+    private static String getFSBotRoleMessageID() throws ExecutionException, InterruptedException {
         QueryDocumentSnapshot doc = getDocument("config", "flux");
 
         return doc.getString("botmsg");
+    }
+
+    public static String getLangRoleMessageID(){
+        if(cacheLANGUAGEROLEMSGID == ""){
+            try {
+                cacheLANGUAGEROLEMSGID = getFSLangRoleMessageID();
+            } catch (ExecutionException | InterruptedException e) {
+                ErrorUtilities.sendErrorMessage(Bot.jda.getGuildById(PublicVars.FLUXGUILDID), null, e.getLocalizedMessage());
+            }
+        }
+        return cacheLANGUAGEROLEMSGID;
+    }
+
+    public static String getBotRoleMessageID(){
+        if(cacheBOTROLEMSGID == ""){
+            try {
+                cacheBOTROLEMSGID = getFSBotRoleMessageID();
+            } catch (ExecutionException | InterruptedException e) {
+                ErrorUtilities.sendErrorMessage(Bot.jda.getGuildById(PublicVars.FLUXGUILDID), null, e.getLocalizedMessage());
+            }
+        }
+        return cacheBOTROLEMSGID;
     }
 
     public static int getLastIdeaID() throws ExecutionException, InterruptedException {

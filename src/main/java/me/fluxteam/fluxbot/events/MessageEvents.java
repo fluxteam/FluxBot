@@ -1,9 +1,12 @@
 package me.fluxteam.fluxbot.events;
 
-import me.fluxteam.fluxbot.commands.Idea;
+import me.fluxteam.fluxbot.PublicVars;
 import me.fluxteam.fluxbot.commands.Ping;
 import me.fluxteam.fluxbot.commands.RoleHere;
+import me.fluxteam.fluxbot.utils.ErrorUtilities;
+import me.fluxteam.fluxbot.utils.FirestoreUtilities;
 import me.fluxteam.fluxbot.utils.GeneralUtilities;
+import me.fluxteam.fluxbot.utils.MemberUtilities;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
@@ -41,7 +44,7 @@ public class MessageEvents extends ListenerAdapter {
                 channel.getHistory().retrievePast(Integer.parseInt(args.get(1)) + 1).complete().forEach(message -> message.delete().queue());
 
         }else if(args.get(0).equals("fl!idea")){
-            new Idea(event, args);
+            //new Idea(event, args);
         }
     }
 
@@ -53,34 +56,40 @@ public class MessageEvents extends ListenerAdapter {
             return;
         // BOT CHECK --
 
+        Guild g = event.getGuild();
         Member m = event.getMember();
 
-        if(event.getReaction().getReactionEmote().isEmote()
-                && GeneralUtilities.getBotEmotes(event.getGuild())
-                .contains(event.getReactionEmote().getEmote())){
-
-            Role r = GeneralUtilities.getEmoteRolesByID(event.getGuild())
-                    .get(event.getReactionEmote().getEmote().getId());
-
-            if(!m.getRoles().contains(r))
-                event.getGuild().addRoleToMember(m, r).queue();
-            else
-                event.getGuild().removeRoleFromMember(m, r).queue();
-
-        }
-        //TODO CHECK THE MSG ID FROM FIREBASE
-        else if(event.getReaction().getReactionEmote().isEmoji()
-                && GeneralUtilities.getLangEmotes()
-                .contains(event.getReactionEmote().getEmoji())){
-
-            Role r = GeneralUtilities.getLangRolesByID(event.getGuild())
-                    .get(event.getReactionEmote().getEmoji());
-
-            if(!m.getRoles().contains(r))
-                event.getGuild().addRoleToMember(m, r).queue();
-            else
-                event.getGuild().removeRoleFromMember(m, r).queue();
-
+        try {
+            if(FirestoreUtilities.getBotRoleMessageID().equals(event.getMessageId())){
+                if(event.getReactionEmote().getEmote().getId().equals(PublicVars.WBEMOJIID)) {
+                    if(!MemberUtilities.hasBotAssigned(g, m, 1))
+                        MemberUtilities.addBotRole(event.getGuild(), m, 1);
+                    else
+                        MemberUtilities.removeBotRole(g, m, 1);
+                }else if(event.getReactionEmote().getEmote().getId().equals(PublicVars.KBEMOJIID)) {
+                    if(!MemberUtilities.hasBotAssigned(g, m, 2))
+                        MemberUtilities.addBotRole(event.getGuild(), m, 2);
+                    else
+                        MemberUtilities.removeBotRole(g, m, 2);
+                }else {
+                    ErrorUtilities.sendErrorMessage(g, m, "Bilinmeyen bot!");;
+                }
+            }else if(FirestoreUtilities.getLangRoleMessageID().equals(event.getMessageId())) {
+                if (MemberUtilities.hasAnyLanguageAssigned(event.getGuild(), m)){
+                    return;
+                }if(event.getReactionEmote().getEmoji().equals(PublicVars.TREMOJITEXT)) {
+                    MemberUtilities.addLangRole(event.getGuild(), m, 1);
+                }else if(event.getReactionEmote().getEmoji().equals(PublicVars.ENEMOJITEXT)) {
+                    MemberUtilities.addLangRole(event.getGuild(), m, 2);
+                }else {
+                    ErrorUtilities.sendErrorMessage(g, m, "Bilinmeyen dil!");;
+                }
+            }else {
+                return;
+            }
+        } catch(Exception e){
+            ErrorUtilities.sendErrorMessage(event.getGuild(), m, e.getLocalizedMessage());
+            e.printStackTrace();
         }
 
     }
@@ -93,35 +102,41 @@ public class MessageEvents extends ListenerAdapter {
             return;
         // BOT CHECK --
 
+        Guild g = event.getGuild();
         Member m = event.getMember();
 
-        if(event.getReaction().getReactionEmote().isEmote()
-                && GeneralUtilities.getBotEmotes(event.getGuild())
-                .contains(event.getReactionEmote().getEmote())){
-
-            Role r = GeneralUtilities.getEmoteRolesByID(event.getGuild())
-                    .get(event.getReactionEmote().getEmote().getId());
-
-            if(!m.getRoles().contains(r))
-                event.getGuild().addRoleToMember(m, r).queue();
-            else
-                event.getGuild().removeRoleFromMember(m, r).queue();
-
+        try {
+            if(FirestoreUtilities.getBotRoleMessageID().equals(event.getMessageId())){
+                if(event.getReactionEmote().getEmote().getId().equals(PublicVars.WBEMOJIID)) {
+                    if(!MemberUtilities.hasBotAssigned(g, m, 1))
+                        MemberUtilities.addBotRole(event.getGuild(), m, 1);
+                    else
+                        MemberUtilities.removeBotRole(g, m, 1);
+                }else if(event.getReactionEmote().getEmote().getId().equals(PublicVars.KBEMOJIID)) {
+                    if(!MemberUtilities.hasBotAssigned(g, m, 2))
+                        MemberUtilities.addBotRole(event.getGuild(), m, 2);
+                    else
+                        MemberUtilities.removeBotRole(g, m, 2);
+                }else {
+                    throw new Exception("Bilinmeyen bot.");
+                }
+            }else if(FirestoreUtilities.getLangRoleMessageID().equals(event.getMessageId())){
+                if(MemberUtilities.hasAnyLanguageAssigned(event.getGuild(), m))
+                    return;
+                if(event.getReactionEmote().getEmoji().equals(PublicVars.TREMOJITEXT)) {
+                    MemberUtilities.addLangRole(event.getGuild(), m, 1);
+                }else if(event.getReactionEmote().getEmoji().equals(PublicVars.ENEMOJITEXT)) {
+                    MemberUtilities.addLangRole(event.getGuild(), m, 2);
+                }else {
+                    ErrorUtilities.sendErrorMessage(g, m, "Language hatali!");
+                }
+            }else {
+                return;
+            }
+        } catch(Exception e){
+            ErrorUtilities.sendErrorMessage(event.getGuild(), m, e.getLocalizedMessage());
         }
 
-        else if(event.getReaction().getReactionEmote().isEmoji()
-                && GeneralUtilities.getLangEmotes()
-                .contains(event.getReactionEmote().getEmoji())){
-
-            Role r = GeneralUtilities.getLangRolesByID(event.getGuild())
-                    .get(event.getReactionEmote().getEmoji());
-
-            if(!m.getRoles().contains(r))
-                event.getGuild().addRoleToMember(m, r).queue();
-            else
-                event.getGuild().removeRoleFromMember(m, r).queue();
-
-        }
 
     }
 
