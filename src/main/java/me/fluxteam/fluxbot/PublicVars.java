@@ -1,8 +1,12 @@
 package me.fluxteam.fluxbot;
 
+import me.fluxteam.fluxbot.utils.ErrorUtilities;
+import net.dv8tion.jda.api.entities.Guild;
+
 public class PublicVars {
 
     public static String FLUXGUILDID = "788392350043996190";
+    public static Guild FLUXGUILD;
 
     public static String WBEMOJIID = "788471599706931220";
     public static String KBEMOJIID = "795277951599509514";
@@ -16,6 +20,15 @@ public class PublicVars {
 
     public static String TURKISHROLEID = "790536228902535208";
     public static String ENGLISHROLEID = "790536289057112084";
+
+    public static void init(){
+        try {
+            FLUXGUILD = Bot.jda.getGuildById(FLUXGUILDID);
+        }catch (NullPointerException e){
+            e.printStackTrace();
+            Bot.jda.shutdownNow();
+        }
+    }
 
 
 }

@@ -99,7 +99,7 @@ public class FirestoreUtilities {
             try {
                 cacheLANGUAGEROLEMSGID = getFSLangRoleMessageID();
             } catch (ExecutionException | InterruptedException e) {
-                ErrorUtilities.sendErrorMessage(Bot.jda.getGuildById(PublicVars.FLUXGUILDID), null, e.getLocalizedMessage());
+                ErrorUtilities.sendErrorMessage(null, e);
             }
         }
         return cacheLANGUAGEROLEMSGID;
@@ -110,7 +110,7 @@ public class FirestoreUtilities {
             try {
                 cacheBOTROLEMSGID = getFSBotRoleMessageID();
             } catch (ExecutionException | InterruptedException e) {
-                ErrorUtilities.sendErrorMessage(Bot.jda.getGuildById(PublicVars.FLUXGUILDID), null, e.getLocalizedMessage());
+                ErrorUtilities.sendErrorMessage(null, e);
             }
         }
         return cacheBOTROLEMSGID;

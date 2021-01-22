@@ -2,6 +2,7 @@ package me.fluxteam.fluxbot;
 
 
 import me.fluxteam.fluxbot.events.MessageEvents;
+import me.fluxteam.fluxbot.utils.ErrorUtilities;
 import me.fluxteam.fluxbot.utils.FirestoreUtilities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -53,6 +54,7 @@ public class Bot {
     public static void init() throws IOException, ExecutionException, InterruptedException {
 
         FirestoreUtilities.init();
+        PublicVars.init();
 
     }
 
