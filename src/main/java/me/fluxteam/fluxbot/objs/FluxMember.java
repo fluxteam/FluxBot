@@ -83,6 +83,7 @@ public class FluxMember {
         if(this.lang.size() != 0)
             return;
         setLanguage(lang);
+        addMemberRole();
     }
 
     private void initBots(){
@@ -130,6 +131,14 @@ public class FluxMember {
             }
         }
         this.bot.clear();
+    }
+
+    public void addMemberRole(){
+        PublicVars.FLUXGUILD.addRoleToMember(member, PublicVars.FLUXGUILD.getRoleById(PublicVars.MEMBERROLEID)).queue();
+    }
+
+    public void removeMemberRole(){
+        PublicVars.FLUXGUILD.removeRoleFromMember(member, PublicVars.FLUXGUILD.getRoleById(PublicVars.MEMBERROLEID)).queue();
     }
 
     public static FluxMember getFluxMember(String ID){

@@ -39,6 +39,7 @@ public class Admin extends FluxCommand{
                 FluxMember fm = FluxMember.getFluxMember(args.get(2));
                 fm.removeLanguages();
                 fm.removeBots();
+                fm.removeMemberRole();
                 event.getChannel().sendMessage(fm.getMember().getEffectiveName() + " adlı kullanıcı sıfırlandı.").queue();
                 return;
             }
@@ -70,6 +71,7 @@ public class Admin extends FluxCommand{
                             .queue(message -> clearUp(7, message));
                     return;
                 }
+                fm.addMemberRole();
             }else {
                 sendUsage();
             }
