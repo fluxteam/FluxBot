@@ -10,7 +10,6 @@ import me.fluxteam.fluxbot.objs.FluxMember;
 import me.fluxteam.fluxbot.objs.Language;
 import me.fluxteam.fluxbot.utils.ErrorUtilities;
 import me.fluxteam.fluxbot.utils.FirestoreUtilities;
-import me.fluxteam.fluxbot.utils.GeneralUtilities;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;

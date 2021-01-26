@@ -18,6 +18,8 @@ public class PublicVars {
     public static String TRWBROLEID = "795295727349268490";
     public static String ENKBROLEID = "795276308962607144";
     public static String TRKBROLEID = "795295585376272414";
+    public static String TESTERROLEID = "798314806112813097";
+
 
     public static String TURKISHROLEID = "790536228902535208";
     public static String ENGLISHROLEID = "790536289057112084";

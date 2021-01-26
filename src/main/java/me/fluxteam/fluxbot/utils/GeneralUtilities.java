@@ -87,7 +87,7 @@ public class GeneralUtilities {
 
         EmbedBuilder eb = new EmbedBuilder();
                 eb.setColor(Color.PINK)
-                .setFooter("FluxTeam * 2020")
+                .setFooter("FluxTeam * 2021")
                 .setThumbnail("https://cdn.discordapp.com/attachments/788854303212175451/789200767864668220/flux.png");
 
         return eb;

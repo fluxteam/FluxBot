@@ -135,6 +135,25 @@ public class FluxMember {
 
     public void addMemberRole(){
         PublicVars.FLUXGUILD.addRoleToMember(member, PublicVars.FLUXGUILD.getRoleById(PublicVars.MEMBERROLEID)).queue();
+        List<String> testerIDs = Arrays.asList("466288781918732308",
+                "602950100414890019",
+                "695256041369370634",
+                "339690807437295618",
+                "625755359117836299",
+                "518805124613799946",
+                "512983899677392926",
+                "354650451167150081",
+                "799351524459413535",
+                "750651489801994270",
+                "378239542567895041",
+                "769288354604384256",
+                "478134549650604053",
+                "520869418880729109",
+                "693451182617657394",
+                "246709176250662912");
+        if(testerIDs.contains(member.getId())){
+            PublicVars.FLUXGUILD.addRoleToMember(member, PublicVars.FLUXGUILD.getRoleById(PublicVars.TESTERROLEID)).queue();
+        }
     }
 
     public void removeMemberRole(){
