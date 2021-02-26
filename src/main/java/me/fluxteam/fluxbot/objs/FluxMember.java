@@ -38,8 +38,8 @@ public class FluxMember {
         List<Language> set = new ArrayList<>();
 
         List<Role> roles = member.getRoles();
-        boolean eng = roles.contains(Language.ENGLISH.getRole());
-        boolean tur = roles.contains(Language.TURKISH.getRole());
+        boolean eng = roles.contains(PublicVars.FLUXGUILD.getRoleById(PublicVars.ENGLISHROLEID));
+        boolean tur = roles.contains(PublicVars.FLUXGUILD.getRoleById(PublicVars.TURKISHROLEID));
         if(tur)
             set.add(Language.TURKISH);
         if(eng)
